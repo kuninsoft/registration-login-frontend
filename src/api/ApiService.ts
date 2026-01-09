@@ -15,18 +15,16 @@ class ApiService {
     }
 
     async register(dto: RegisterDto) {
-        await this.executeAuth("Register", dto);
+        return await this.executeAuth("Register", dto);
     }
 
     async login(dto: LoginDto) {
-        await this.executeAuth("Login", dto);
+        return await this.executeAuth("Login", dto);
     }
 
-    async refresh() {
-        const refreshToken = localStorage.getItem("refreshToken");
-
+    async refresh(dto: RefreshDto) {
         try {
-            await this.executeAuth("Refresh", { refreshToken: refreshToken } as RefreshDto);
+            return await this.executeAuth("Refresh", { refreshToken: dto.refreshToken } as RefreshDto);
         } catch (e) {
             console.error(e);
 
@@ -37,47 +35,28 @@ class ApiService {
         }
     }
 
-    async test() {
-        await this.makeRequestWithRetry("Main/Test");
+    async test(accessToken: string | null) {
+        await this.makeRequest("Main/Test", accessToken);
     }
 
-    async assignAdmin() {
-        const response = await this.makeRequestWithRetry("Main/AssignAdmin") as AuthResponse;
-
-        this.saveTokens(response.accessToken, response.refreshToken);
+    async assignAdmin(accessToken: string | null) {
+        return await this.makeRequest("Main/AssignAdmin", accessToken, {
+            method: "POST"
+        }) as AuthResponse;
     }
 
-    async adminTest() {
-        await this.makeRequestWithRetry("Main/AdminTest");
-    }
-
-    private async makeRequestWithRetry<T>(endpoint: string, init?: RequestInit): Promise<T> {
-        try {
-            return await this.makeRequest<T>(endpoint, init);
-        } catch (error) {
-            if (!(error instanceof ResponseError)
-                || error.errorCode !== 401) {
-                throw error;
-            } 
-
-            await this.refresh();
-
-            return await this.makeRequest<T>(endpoint, init);
-        }
+    async adminTest(accessToken: string | null) {
+        await this.makeRequest("Main/AdminTest", accessToken);
     }
 
     private async executeAuth<T extends keyof AuthEndpointMap>(endpoint: T, dto: AuthEndpointMap[T]) {
-        const response = await this.makeRequest(`Auth/${endpoint}`, {
+        return await this.makeRequest(`Auth/${endpoint}`, null, {
             method: "POST",
             body: JSON.stringify(dto)
         }) as AuthResponse;
-
-        this.saveTokens(response.accessToken, response.refreshToken);
     }
 
-    private async makeRequest<T>(endpoint: string, init?: RequestInit): Promise<T> {
-        const accessToken = sessionStorage.getItem("accessToken");
-
+    private async makeRequest<T>(endpoint: string, accessToken: string | null, init?: RequestInit): Promise<T> {
         const response = await fetch(new URL(endpoint, this.baseUrl), {
             ...init,
             headers: {
@@ -91,19 +70,23 @@ class ApiService {
             throw new ResponseError(response.status, response.statusText ?? "An error occurred");
         }
 
-        return await response.json() as T;
-    }
+        const contentType = response.headers.get("content-type");
 
-    private saveTokens(accessToken: string, refreshToken: string) {
-        if (!accessToken || !refreshToken) {
-            throw Error("AccessToken or RefreshToken are invalid");
+        console.debug(`Request to ${endpoint} success! Response code: ${response.status}`);
+
+        if (!contentType || !contentType.includes("application/json")) {
+            return undefined as T;
         }
 
-        sessionStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        const text = await response.text();
+        if (!text) {
+            return undefined as T;
+        }
+
+        return JSON.parse(text) as T;
     }
 }
 
-const apiService = new ApiService("http://localhost:5236");
+const apiService = new ApiService("https://registration-login-api-baezanekfnbqcqaf.westeurope-01.azurewebsites.net");
 
 export default apiService;

@@ -1,9 +1,7 @@
 import { useState } from "react"
 import LoginModal from "./LoginModal";
 import RegistrationModal from "./RegistrationModal";
-import { useAuth } from "./useAuth";
-
-
+import { useAuth } from "../hooks/useAuth";
 
 export default function AuthComponent() {
     const [isLogin, setIsLogin] = useState(false);
@@ -30,7 +28,12 @@ export default function AuthComponent() {
             </button>
 
             { isLogin &&
-                <LoginModal onLogin={login} 
+                <LoginModal 
+                    onLogin={async (username, password) => {
+                        const result = await login(username, password);
+                        setIsLogin(false);
+                        return result;
+                    }} 
                     onCancel={() => {
                         setIsLogin(false);
                         clearError();
@@ -39,7 +42,12 @@ export default function AuthComponent() {
             }
 
             { isRegister && 
-                <RegistrationModal onRegister={register} 
+                <RegistrationModal 
+                    onRegister={async (username, fullName, password) => {
+                        const result = await register(username, fullName, password);
+                        setIsRegister(false);
+                        return result;
+                    }} 
                     onCancel={() => {
                         setIsRegister(false);
                         clearError();

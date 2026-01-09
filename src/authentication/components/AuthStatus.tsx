@@ -1,14 +1,17 @@
+import { useAuth } from "../hooks/useAuth";
+
 interface AuthStatusProps {
     username: string;
     role: string;
-    onLogout: () => void;
 }
 
-export default function AuthStatus({username, role, onLogout}: AuthStatusProps) {
+export default function AuthStatus({username, role}: AuthStatusProps) {
+    const { logout } = useAuth();
+
     return (
         <section className="top-bar status">
             <div className="status-text">You are signed in, {role} {username}.</div>
-            <button onClick={onLogout}>Log out</button>
+            <button onClick={logout}>Log out</button>
         </section>
     );
 }

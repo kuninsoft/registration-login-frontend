@@ -1,15 +1,22 @@
-interface ApiComponentProps {
-    onTestCall: () => void;
-    onPromote: () => void;
-    onAdminCall: () => void;
-}
+import ErrorComponent from "./ErrorComponent";
+import useApi from "./useApi";
 
-export default function ApiComponent({onTestCall, onPromote, onAdminCall}: ApiComponentProps) {
+export default function ApiComponent() {
+    const {test, assignAdmin, adminTest, error, clearError} = useApi();
+
     return (
-        <section className="api-component">
-            <button onClick={onTestCall}>Test Call</button>
-            <button onClick={onPromote}>Promote to Admin</button>
-            <button onClick={onAdminCall}>Admin Test Call</button>
-        </section>
+        <>
+            <section className="api-component">
+                <button onClick={test}>Test Call</button>
+                <button onClick={assignAdmin}>Promote to Admin</button>
+                <button onClick={adminTest}>Admin Test Call</button>
+            </section>
+            { error &&
+                <ErrorComponent 
+                    errorCode={error.errorCode}
+                    errorMessage={error.errorMessage}
+                    clearError={clearError} />
+            }
+        </>
     );
 }

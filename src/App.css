@@ -1,0 +1,102 @@
+header {
+    text-align: center;
+}
+
+main {
+    margin-top: 40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.api-component {
+    display: flex;
+    gap: 10px;
+}
+
+.error {
+    background-color: mistyrose;
+    padding: 10px;
+    border-radius: 15px;
+
+    min-width: 250px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.error-status {
+    color: red;
+}
+
+.error button {
+    background: none;
+    border: none;
+    font-size: 24px;
+}
+
+.modal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    top: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal form {
+    padding: 15px;
+    background-color: white;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 8px;
+}
+
+.modal input {
+    padding: 5px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status button {
+    color: red;
+}
+
+button {
+    padding: 5px;
+}
+
+footer {
+    text-align: center;
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+}
