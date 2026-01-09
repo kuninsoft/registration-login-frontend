@@ -1,4 +1,5 @@
 # Frontend SPA for Registration & Login API
+Try it out: https://calm-cliff-059303d03.1.azurestaticapps.net/
 
 ## Overview
 
